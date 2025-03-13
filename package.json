@@ -1,6 +1,6 @@
 {
   "name": "async-parallel-pipe",
-  "version": "1.0.0-rc.0",
+  "version": "1.0.0",
   "description": "",
   "main": "./dist/index.js",
   "types": "./src/index.ts",
