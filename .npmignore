@@ -1,0 +1,11 @@
+.github/
+.vscode/
+coverage/
+tests/
+.editorconfig
+.eslintrc.json
+.gitignore
+tsconfig.json
+jest.config.ts
+*.tgz
+tsconfig.tsbuildinfo

@@ -1,0 +1,12 @@
+/.vscode/
+/coverage/
+/dist/
+/node_modules/
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+*.tgz
+ehthumbs.db
+Icon?
+Thumbs.db
+tsconfig.tsbuildinfo
