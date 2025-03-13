@@ -1,6 +1,12 @@
 Async Parallel Pipe
 ===================
 
+[![NPM Version](https://img.shields.io/npm/v/async-parallel-pipe.svg)](https://www.npmjs.com/package/async-parallel-pipe)
+[![Audit](https://github.com/snatalenko/async-parallel-pipe/actions/workflows/audit.yml/badge.svg)](https://github.com/snatalenko/async-parallel-pipe/actions/workflows/audit.yml)
+[![Tests](https://github.com/snatalenko/async-parallel-pipe/actions/workflows/tests.yml/badge.svg)](https://github.com/snatalenko/async-parallel-pipe/actions/workflows/tests.yml)
+[![Coverage Status](https://coveralls.io/repos/github/snatalenko/async-parallel-pipe/badge.svg?branch=main)](https://coveralls.io/github/snatalenko/async-parallel-pipe?branch=main)
+[![NPM Downloads](https://img.shields.io/npm/dm/async-parallel-pipe.svg)](https://www.npmjs.com/package/async-parallel-pipe)
+
 The function pulls input values from async iterable input, runs async action, and returns async iterable output in a same order as input was received.
 
 Here is an example that requests random numbers from random.org with not more than 2 concurrent requests at a time:
