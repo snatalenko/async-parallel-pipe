@@ -453,7 +453,6 @@ export default defineConfig([
 					"includeCommonJSModuleExports": false
 				}
 			],
-			"func-names": "error",
 			"func-style": [
 				"off",
 				"expression"

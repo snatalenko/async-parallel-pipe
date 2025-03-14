@@ -24,15 +24,17 @@ export function parallelPipe<TInput, TOutput>(
 		value: TInput
 	}): Promise<
 		{ done: false, value: TOutput } |
-		{ done: true, value: undefined }
+		{ done: true, value: TOutput | undefined }
 	> {
 		const { done, value: inputValue } = input;
 		if (done) {
-			if (inputValue)
-				throw new Error('input.value is not expected along with done: true');
-
 			inputDone = true;
-			return { done, value: undefined };
+
+			const actionResult = inputValue !== undefined ?
+				await action(inputValue, inputIndex++) :
+				undefined;
+
+			return { done, value: actionResult };
 		}
 		else {
 			const actionResult = await action(inputValue, inputIndex++);
@@ -55,8 +57,11 @@ export function parallelPipe<TInput, TOutput>(
 	return {
 		async next() {
 			// start processing input once output is requested
-			if (runningTasks.length === 0)
+			if (!runningTasks.length)
 				pullFromInput();
+
+			if (!runningTasks.length)
+				return { done: true, value: undefined };
 
 			const firstRunningTask = runningTasks.splice(0, 1)[0];
 			const { done, value } = await firstRunningTask;
@@ -65,9 +70,6 @@ export function parallelPipe<TInput, TOutput>(
 				pullFromInput();
 
 			return { done, value };
-		},
-		async return() {
-			return { done: true, value: null };
 		},
 		[Symbol.asyncIterator]() {
 			return this;

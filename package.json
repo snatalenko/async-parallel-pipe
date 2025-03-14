@@ -8,9 +8,6 @@
     "build": "tsc --build",
     "test": "jest --verbose tests/unit",
     "test:coverage": "jest --collect-coverage tests/unit",
-    "pretest:coveralls": "npm run test:coverage",
-    "test:coveralls": "cat ./coverage/lcov.info | coveralls",
-    "posttest:coveralls": "rm -rf ./coverage",
     "lint": "eslint .",
     "prepare": "npm run build",
     "preversion": "npm test"
@@ -25,7 +22,6 @@
     "@typescript-eslint/eslint-plugin": "^8.26.1",
     "@typescript-eslint/parser": "^8.26.1",
     "chai": "^4.5.0",
-    "coveralls": "^3.1.1",
     "eslint": "^9.22.0",
     "eslint-plugin-jest": "^28.11.0",
     "globals": "^16.0.0",
