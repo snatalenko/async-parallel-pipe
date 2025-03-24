@@ -1,5 +1,4 @@
 import { parallelPipe } from '../../src';
-import { expect } from 'chai';
 
 async function* asyncGenerator<T>(arr: T[]): AsyncIterableIterator<T> {
 	for (const item of arr)
@@ -22,7 +21,7 @@ describe('parallelPipe', () => {
 		for await (const output of iterator)
 			results.push(output);
 
-		expect(results).to.deep.equal([10, 20, 30]);
+		expect(results).toEqual([10, 20, 30]);
 	});
 
 	it('processes an async iterable with asynchronous tasks', async () => {
@@ -38,7 +37,7 @@ describe('parallelPipe', () => {
 		for await (const output of iterator)
 			results.push(output);
 
-		expect(results).to.deep.equal([1, 3, 5]);
+		expect(results).toEqual([1, 3, 5]);
 	});
 
 	it('handles a mix of synchronous and asynchronous tasks', async () => {
@@ -56,7 +55,7 @@ describe('parallelPipe', () => {
 		for await (const output of iterator)
 			results.push(output);
 
-		expect(results).to.deep.equal([5, 11, 13]);
+		expect(results).toEqual([5, 11, 13]);
 	});
 
 	it('propagates errors from tasks', async () => {
@@ -78,8 +77,8 @@ describe('parallelPipe', () => {
 		catch (err) {
 			caughtError = err;
 		}
-		expect(caughtError).to.exist;
-		expect(caughtError.message).to.equal('fail');
+		expect(caughtError).toBeTruthy();
+		expect(caughtError.message).toEqual('fail');
 	});
 
 	it('does not exceed the specified parallel limit', async () => {
@@ -102,14 +101,14 @@ describe('parallelPipe', () => {
 		for await (const output of iterator)
 			results.push(output);
 
-		expect(results).to.deep.equal(inputValues);
-		expect(maxRunning).to.be.at.most(limit);
+		expect(results).toEqual(inputValues);
+		expect(maxRunning).toBeLessThanOrEqual(limit);
 	});
 
 	it('returns an AsyncIterableIterator', async () => {
 		const input = asyncGenerator([1]);
 		const iterator = parallelPipe(input, 2, x => x);
-		expect(iterator[Symbol.asyncIterator]).to.be.a('function');
+		expect(typeof iterator[Symbol.asyncIterator]).toBe('function');
 	});
 
 	it('processes input generator values in 2 concurrent Promises', async () => {
@@ -128,11 +127,19 @@ describe('parallelPipe', () => {
 			output[el] = ts;
 
 		const { a, b, c, d, e } = output;
-		expect(a).to.be.gte(TASK_DELAY).and.lt(TASK_DELAY * 2);
-		expect(b).to.be.gte(TASK_DELAY).and.lt(TASK_DELAY * 2);
-		expect(c).to.be.gte(TASK_DELAY * 2).and.lt(TASK_DELAY * 3);
-		expect(d).to.be.gte(TASK_DELAY * 2).and.lt(TASK_DELAY * 3);
-		expect(e).to.be.gte(TASK_DELAY * 3);
+		expect(a).toBeGreaterThanOrEqual(TASK_DELAY);
+		expect(a).toBeLessThan(TASK_DELAY * 2);
+
+		expect(b).toBeGreaterThanOrEqual(TASK_DELAY);
+		expect(b).toBeLessThan(TASK_DELAY * 2);
+
+		expect(c).toBeGreaterThanOrEqual(TASK_DELAY * 2);
+		expect(c).toBeLessThan(TASK_DELAY * 3);
+
+		expect(d).toBeGreaterThanOrEqual(TASK_DELAY * 2);
+		expect(d).toBeLessThan(TASK_DELAY * 3);
+
+		expect(e).toBeGreaterThanOrEqual(TASK_DELAY * 3);
 	});
 
 	it('handles 10k input values in 1k concurrent Promises', async () => {
@@ -151,8 +158,8 @@ describe('parallelPipe', () => {
 			resultCount++;
 			resultLastValue = v;
 		}
-		expect(resultCount).to.equal(length);
-		expect(resultLastValue).to.equal((length * 2) + 1);
+		expect(resultCount).toBe(length);
+		expect(resultLastValue).toBe((length * 2) + 1);
 	});
 
 	it('produces results in same sequence as input comes in', async () => {
@@ -182,12 +189,13 @@ describe('parallelPipe', () => {
 			sequence.push(el);
 			times.push(ts);
 		}
-		expect(sequence).to.eql([1, 2, 3, 4, 5]);
-		expect(times[0]).to.be.lte(SECOND_TASK_DELAY);
-		expect(times[1]).to.be.gte(SECOND_TASK_DELAY);
-		expect(times[2]).to.be.within(THIRD_TASK_DELAY, SECOND_TASK_DELAY);
-		expect(times[3]).to.be.gte(SECOND_TASK_DELAY);
-		expect(times[4]).to.be.gte(SECOND_TASK_DELAY);
+		expect(sequence).toEqual([1, 2, 3, 4, 5]);
+		expect(times[0]).toBeLessThanOrEqual(SECOND_TASK_DELAY);
+		expect(times[1]).toBeGreaterThanOrEqual(SECOND_TASK_DELAY);
+		expect(times[2]).toBeGreaterThanOrEqual(THIRD_TASK_DELAY);
+		expect(times[2]).toBeLessThanOrEqual(SECOND_TASK_DELAY);
+		expect(times[3]).toBeGreaterThanOrEqual(SECOND_TASK_DELAY);
+		expect(times[4]).toBeGreaterThanOrEqual(SECOND_TASK_DELAY);
 	});
 
 	it('iterator returns final value along with done: true', async () => {
@@ -200,13 +208,13 @@ describe('parallelPipe', () => {
 		const iterator = parallelPipe(generatorWithReturn(), 1, async x => x);
 
 		const res1 = await iterator.next();
-		expect(res1).to.deep.equal({ value: 'first', done: false });
+		expect(res1).toEqual({ value: 'first', done: false });
 
 		const res2 = await iterator.next();
-		expect(res2).to.deep.equal({ value: 'second', done: false });
+		expect(res2).toEqual({ value: 'second', done: false });
 
 		const res3 = await iterator.next();
-		expect(res3).to.deep.equal({ value: 'final', done: true });
+		expect(res3).toEqual({ value: 'final', done: true });
 	});
 
 	it('returns { value: undefined, done: true } after iterator is done', async () => {
@@ -218,24 +226,24 @@ describe('parallelPipe', () => {
 		const iterator = parallelPipe(simpleGen(), 1, async x => x);
 
 		const res1 = await iterator.next();
-		expect(res1).to.eql({ value: 1, done: false });
+		expect(res1).toEqual({ value: 1, done: false });
 
 		const res2 = await iterator.next();
-		expect(res2).to.eql({ value: 2, done: false });
+		expect(res2).toEqual({ value: 2, done: false });
 
 		const res3 = await iterator.next();
-		expect(res3).to.eql({ value: undefined, done: true });
+		expect(res3).toEqual({ value: undefined, done: true });
 
 		// Subsequent calls after completion
 		const res4 = await iterator.next();
-		expect(res4).to.eql({ value: undefined, done: true });
+		expect(res4).toEqual({ value: undefined, done: true });
 	});
 
 	describe('Invalid parameters', () => {
 
 		it('throws error if input is not iterable', () => {
 			expect(() => parallelPipe(123 as any, 2, x => x))
-				.to.throw(TypeError, 'iterableInput must be an Iterable Object');
+				.toThrow('iterableInput must be an Iterable Object');
 		});
 
 		it('throws error if concurrentTasksLimit is not a positive number (zero)', () => {
@@ -243,7 +251,7 @@ describe('parallelPipe', () => {
 				yield 1;
 			}());
 			expect(() => parallelPipe(validIterable, 0, x => x))
-				.to.throw(TypeError, 'concurrentTasksLimit argument must be a positive Number');
+				.toThrow('concurrentTasksLimit argument must be a positive Number');
 		});
 
 		it('throws error if concurrentTasksLimit is not a positive number (non-number)', () => {
@@ -251,7 +259,7 @@ describe('parallelPipe', () => {
 				yield 1;
 			}());
 			expect(() => parallelPipe(validIterable, '2' as any, x => x))
-				.to.throw(TypeError, 'concurrentTasksLimit argument must be a positive Number');
+				.toThrow('concurrentTasksLimit argument must be a positive Number');
 		});
 
 		it('throws error if action is not a function', () => {
@@ -259,7 +267,7 @@ describe('parallelPipe', () => {
 				yield 1;
 			}());
 			expect(() => parallelPipe(validIterable, 1, {} as any))
-				.to.throw(TypeError, 'action argument must be a Function');
+				.toThrow('action argument must be a Function');
 		});
 	});
 });
