@@ -19,10 +19,7 @@ export function parallelPipe<TInput, TOutput>(
 	let inputDone = false;
 	let inputIndex = 0;
 
-	async function executeActionOnIterableInput(input: {
-		done: boolean,
-		value: TInput
-	}): Promise<
+	async function executeActionOnIterableInput(input: IteratorResult<TInput, any>): Promise<
 		{ done: false, value: TOutput } |
 		{ done: true, value: TOutput | undefined }
 	> {
@@ -38,7 +35,7 @@ export function parallelPipe<TInput, TOutput>(
 		}
 		else {
 			const actionResult = await action(inputValue, inputIndex++);
-			return { done, value: actionResult };
+			return { done: false, value: actionResult };
 		}
 	}
 
